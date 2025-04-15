@@ -5,7 +5,7 @@ from io import BytesIO
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
 
-TOKEN = '7283540458:AAEyweQI4z6RP1lV_p5_NdvL8hd721l4EIg'
+TOKEN = '7040333422:AAFjTophz4pESCw-hPKZtybDEg1CaIn9hO0'
 URL = f'https://api.telegram.org/bot{TOKEN}/'
 
 context_data = {}
