@@ -2,31 +2,45 @@ import requests
 import time
 from datetime import datetime
 from io import BytesIO
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 import threading
+import sys
+import traceback
 
-TOKEN = '7040333422:AAFjTophz4pESCw-hPKZtybDEg1CaIn9hO0'
+TOKEN = "7040333422:AAHUF7yNM5gClaKEo7uLG4UCblfnKtYuIUA"
 URL = f'https://api.telegram.org/bot{TOKEN}/'
 
 context_data = {}
 lock = threading.Lock()
 
 def send_message(chat_id, text):
-    requests.get(URL + 'sendMessage', params={'chat_id': chat_id, 'text': text})
+    try:
+        requests.get(URL + 'sendMessage', params={'chat_id': chat_id, 'text': text})
+    except Exception as e:
+        print(f"Error sending message: {e}")
 
 def send_file(chat_id, text_content, filename='results.txt'):
-    bio = BytesIO()
-    bio.write(text_content.encode())
-    bio.seek(0)
-    requests.post(
-        URL + 'sendDocument',
-        data={'chat_id': chat_id},
-        files={'document': (filename, bio)}
-    )
+    try:
+        bio = BytesIO()
+        bio.write(text_content.encode())
+        bio.seek(0)
+        requests.post(
+            URL + 'sendDocument',
+            data={'chat_id': chat_id},
+            files={'document': (filename, bio)}
+        )
+    except Exception as e:
+        print(f"Error sending file: {e}")
 
 def get_updates(offset=None):
     params = {'timeout': 50, 'offset': offset}
-    return requests.get(URL + 'getUpdates', params=params).json()
+    try:
+        return requests.get(URL + 'getUpdates', params=params).json()
+    except Exception as e:
+        print(f"Error getting updates: {e}")
+        return {}
+
+
 
 def analyze_site(url):
     if not url.startswith(('http://', 'https://')):
@@ -275,5 +289,19 @@ def main():
                     handle_file(chat_id, file_data)
 
 
+
+
+
+
+
+
+
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\nBot stopped by user.")
+        sys.exit()
+    except Exception:
+        traceback.print_exc()
+        sys.exit(1)
